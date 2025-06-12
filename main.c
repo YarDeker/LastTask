@@ -1,9 +1,9 @@
 #include <stdio.h>
-#include <stdlib.h> // для system()
+#include <stdlib.h> 
 
 #define SIZE 3
 
-char board[SIZE][SIZE];  // Game board
+char board[SIZE][SIZE];  
 
 void initBoard() {
     for (int i = 0; i < SIZE; i++)
@@ -68,7 +68,7 @@ void clearInputBuffer() {
 }
 
 int main() {
-    system("chcp 65001 > nul"); // Enable UTF-8 in Windows terminal
+    system("chcp 65001 > nul"); 
     char currentPlayer = 'X';
     int row, col;
     char winner;
