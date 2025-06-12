@@ -1,79 +1,109 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h> // для system()
 
-void task1(){
-    printf("Hello\n");
+#define SIZE 3
+
+char board[SIZE][SIZE];  // Game board
+
+void initBoard() {
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++)
+            board[i][j] = ' ';
 }
 
-void task2(){
-    int num = 10;
-    printf("%d\n",num);
-}
+void printBoard() {
+    printf("\n  ");
+    for (int i = 0; i < SIZE; i++) printf(" %d ", i);
+    printf("\n");
 
-void task3(){
-    float num = 3.14;
-    printf("%.2f\n",num);
-}
-
-void task4(){
-    int a = 5, b = 7;
-    printf("Sum: %d\n", (a + b));
-}
-
-void task5(){
-    printf("Hello\tWorld\n");
-}
-
-void task6(){
-    float num = 3.1415;
-    printf("%8.3f\n", num);
-}
-
-void task7(){
-    printf("Sum: %.1f\n", (3.5 + 2.7));
-}
-
-void task8(){
-    float C;
-    printf("Enter temperature in Celsius: ");
-    scanf("%f", &C);
-    float F = C * 9 / 5 + 32;
-    printf("Temperature in Fahrenheit: %.2f\n", F);
-}
-
-void task9(){
-    int num;
-    printf("Enter a number: ");
-    scanf("%d", &num);
-    printf("%s\n", (num % 2 == 0) ? "Парне" : "Непарне");
-}
-
-void task10(){
-    int a, b;
-    printf("Enter two numbers: ");
-    scanf("%d %d", &a, &b);
-    printf("Greater number: %d\n", (a > b) ? a : b);
-}
-
-int main(){
-    int choice;
-    do {
-        printf("\nChoose a task (1-10, 0 to exit): ");
-        scanf("%d", &choice);
-        switch (choice) {
-            case 1: task1(); break;
-            case 2: task2(); break;
-            case 3: task3(); break;
-            case 4: task4(); break;
-            case 5: task5(); break;
-            case 6: task6(); break;
-            case 7: task7(); break;
-            case 8: task8(); break;
-            case 9: task9(); break;
-            case 10: task10(); break;
-            case 0: printf("Exiting...\n"); break;
-            default: printf("Invalid choice!\n");
+    for (int i = 0; i < SIZE; i++) {
+        printf("%d ", i);
+        for (int j = 0; j < SIZE; j++) {
+            printf(" %c ", board[i][j]);
+            if (j < SIZE - 1) printf("|");
         }
-    } while (choice != 0);
+        printf("\n");
+        if (i < SIZE - 1) printf("  ---+---+---\n");
+    }
+    printf("\n");
+}
+
+char checkWinner() {
+    for (int i = 0; i < SIZE; i++) {
+        if (board[i][0] == board[i][1] &&
+            board[i][1] == board[i][2] &&
+            board[i][0] != ' ')
+            return board[i][0];
+
+        if (board[0][i] == board[1][i] &&
+            board[1][i] == board[2][i] &&
+            board[0][i] != ' ')
+            return board[0][i];
+    }
+
+    if (board[0][0] == board[1][1] &&
+        board[1][1] == board[2][2] &&
+        board[0][0] != ' ')
+        return board[0][0];
+
+    if (board[0][2] == board[1][1] &&
+        board[1][1] == board[2][0] &&
+        board[0][2] != ' ')
+        return board[0][2];
+
+    return ' ';
+}
+
+int isDraw() {
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++)
+            if (board[i][j] == ' ')
+                return 0;
+    return 1;
+}
+
+void clearInputBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+int main() {
+    system("chcp 65001 > nul"); // Enable UTF-8 in Windows terminal
+    char currentPlayer = 'X';
+    int row, col;
+    char winner;
+
+    initBoard();
+
+    while (1) {
+        printBoard();
+        printf("Player %c, enter row and column (0-2): ", currentPlayer);
+        if (scanf("%d %d", &row, &col) != 2) {
+            printf("Invalid input. Try again.\n");
+            clearInputBuffer();
+            continue;
+        }
+
+        if (row < 0 || row >= SIZE || col < 0 || col >= SIZE || board[row][col] != ' ') {
+            printf("Invalid move. Cell is already taken or out of bounds.\n");
+            continue;
+        }
+
+        board[row][col] = currentPlayer;
+        winner = checkWinner();
+
+        if (winner != ' ') {
+            printBoard();
+            printf("Player %c wins!\n", winner);
+            break;
+        } else if (isDraw()) {
+            printBoard();
+            printf("It's a draw!\n");
+            break;
+        }
+
+        currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+    }
+
     return 0;
 }
